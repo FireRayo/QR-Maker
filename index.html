@@ -39,6 +39,20 @@
 @media(max-width:1020px){.columns{grid-template-columns:1fr}.preview-panel{position:static;order:-1}.shell{max-width:840px}.preview-stage{min-height:285px}.preview-frame{max-height:260px;width:min(100%,260px)}}
 @media(max-width:620px){.shell{padding:19px 14px 40px}.topbar{gap:17px}.brand h1{font-size:22px}.toolbar{width:100%;justify-content:space-between}.panel{padding:18px}.columns,.editor{gap:17px}.field-grid{grid-template-columns:1fr}.color-pairs{grid-template-columns:1fr}.swatch-group{grid-template-columns:repeat(3,minmax(0,1fr))}.actions{grid-template-columns:1fr}.actions .wide{grid-column:auto}.preview-stage{padding:15px;min-height:230px}.modal dl{grid-template-columns:1fr}.tool-actions{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+
+/* 01.B. Nuevas opciones de organización y contenido del catálogo.
+   No se añaden librerías ni imágenes externas: todo permanece en el HTML. */
+.catalog-note{margin-top:12px;min-height:26px;font-size:12px;color:var(--text-muted);line-height:1.5}
+.library-list{display:flex;flex-direction:column;gap:12px;max-height:50vh;overflow:auto;margin-top:15px}
+.library-item{padding:14px 16px;border-radius:14px;box-shadow:var(--inset)}
+.library-item strong{overflow-wrap:anywhere}
+.library-meta{font-size:11px;color:var(--text-muted);margin:5px 0 11px;overflow-wrap:anywhere}
+.library-filters{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.library-actions{display:flex;gap:8px;flex-wrap:wrap}
+.modal.wide-modal{width:min(96vw,750px)}
+.form-tip{padding:12px 14px;border-radius:12px;background:var(--surface);box-shadow:var(--inset);font-size:12px;color:var(--text-muted);line-height:1.55}
+@media(max-width:620px){.library-filters{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -76,7 +90,7 @@
     <section class="panel neo-card" aria-labelledby="contentHeading">
      <div class="section-heading"><div><div class="section-title"><span class="step">01</span><h2 id="contentHeading" data-i18n="content">QR content</h2></div><p data-i18n="contentHelp">Choose the data encoded inside the image.</p></div><span class="pill" data-i18n="staticTag">STATIC · OFFLINE</span></div>
      <div class="field"><label for="contentType" data-i18n="contentType">Content type</label><select class="select type-select" id="contentType"></select></div>
-     <div id="contentFields" class="field-grid content-fields"></div>
+     <div id="contentFields" class="field-grid content-fields"></div><p id="catalogNote" class="catalog-note" data-i18n="catalogNote">Static QR: links to external services require a published web address.</p>
      <div class="hr"></div>
      <div class="row space"><strong class="field-title" data-i18n="encodedContent">Encoded value</strong><button class="text-link" id="copyPayload" data-i18n="copyText">Copy text</button></div>
      <div id="payloadPreview" class="data-preview" aria-live="polite"></div>
@@ -105,7 +119,7 @@
      <div class="field-grid" style="margin-top:16px"><div class="field"><label for="logoSize" data-i18n="logoSize">Logo size</label><div class="range-row"><input class="range" id="logoSize" type="range" min="8" max="22" value="15"><output id="logoSizeOut" class="range-out">15%</output></div></div><div class="field"><label for="logoPadding" data-i18n="logoPadding">Logo padding</label><div class="range-row"><input class="range" id="logoPadding" type="range" min="0" max="8" value="3"><output id="logoPaddingOut" class="range-out">3</output></div></div></div>
      <p class="note" data-i18n="logoWarning">Logo protection uses ECC H, reserves data modules and checks structural patterns. Large logos may be reduced automatically.</p><p id="logoProtectionState" class="note" aria-live="polite" hidden></p>
      <div class="subhead" data-i18n="presets">Style presets</div><div id="presets" class="row"></div>
-     <div class="field-grid" style="margin-top:17px"><div class="field"><label for="frameText" data-i18n="frameText">Frame caption</label><input class="input" id="frameText" maxlength="55" placeholder="SCAN ME"></div><div class="field"><label for="frameStyle" data-i18n="frameStyle">Frame style</label><select class="select" id="frameStyle"><option value="none" data-i18n="none">None</option><option value="simple" data-i18n="frameSimple">Caption</option><option value="border" data-i18n="frameBorder">Caption + border</option></select></div></div>
+     <div class="field-grid" style="margin-top:17px"><div class="field"><label for="frameText" data-i18n="frameText">Frame caption</label><input class="input" id="frameText" maxlength="55" placeholder="SCAN ME"></div><div class="field"><label for="frameStyle" data-i18n="frameStyle">Frame style</label><select class="select" id="frameStyle"><option value="none" data-i18n="none">None</option><option value="simple" data-i18n="frameSimple">Caption</option><option value="border" data-i18n="frameBorder">Caption + border</option><option value="double" data-i18n="frameDouble">Double border</option><option value="pill" data-i18n="framePill">Rounded frame</option><option value="corners" data-i18n="frameCorners">Corner brackets</option></select></div></div>
      <div class="row" style="margin-top:15px"><button class="btn small" id="saveStyle" data-i18n="saveStyle">Save my style</button><button class="btn small" id="loadStyle" data-i18n="loadStyle">Load saved style</button></div>
     </section>
     <section class="panel neo-card">
@@ -120,6 +134,15 @@
        <div class="field"><label for="customResolution" data-i18n="customResolution">Custom resolution (px)</label><input id="customResolution" class="input" type="number" min="64" max="8192" placeholder="1024"></div>
        <div class="field"><label for="filename" data-i18n="filename">File name</label><input id="filename" class="input" value="qr-maker" maxlength="85"></div>
       </div>
+      <div class="subhead" data-i18n="campaignMeta">Project & campaign labels (local only)</div>
+      <div class="field-grid">
+       <div class="field"><label for="projectLabel" data-i18n="projectLabel">Project label</label><input id="projectLabel" class="input" maxlength="90" placeholder="Product launch"></div>
+       <div class="field"><label for="projectFolder" data-i18n="projectFolder">Folder / category</label><input id="projectFolder" class="input" maxlength="80" placeholder="Marketing"></div>
+       <div class="field"><label for="campaignMedium" data-i18n="campaignMedium">Distribution medium</label><input id="campaignMedium" class="input" maxlength="90" placeholder="Poster, packaging, print..."></div>
+       <div class="field"><label for="campaignStart" data-i18n="campaignStart">Campaign start date</label><input id="campaignStart" class="input" type="date"></div>
+       <div class="field"><label for="printCopies" data-i18n="printCopies">Planned print quantity</label><input id="printCopies" class="input" min="0" max="999999999" step="1" type="number" placeholder="100"></div>
+      </div>
+      <p class="note" data-i18n="campaignNote">These labels are saved in projects or the local library; they are not encoded in the QR and do not track scans.</p>
       <div class="toggle-row" style="margin-top:14px"><label for="saveHistory" data-i18n="saveHistory">Save local history (optional)</label><input type="checkbox" class="check" id="saveHistory"></div>
       <p class="note" data-i18n="advancedWarning">Use a quiet zone of at least 4 modules and sufficient contrast for reliable scanning.</p>
      </div></details>
@@ -132,8 +155,11 @@
        <button class="btn" id="historyButton" data-i18n="history">Local history</button>
        <button class="btn" id="resetButton" data-i18n="reset">Reset current project</button>
        <button class="btn" id="copySvgButton" data-i18n="copySvg">Copy SVG text</button>
+       <button class="btn" id="saveLibrary" data-i18n="saveLibrary">Save to local library</button>
+       <button class="btn" id="openLibrary" data-i18n="openLibrary">Browse local library</button>
+       <button class="btn" id="landingBuilder" data-i18n="landingBuilder">Export landing page HTML</button>
       </div>
-      <p class="note" data-i18n="serverFeatures">Dynamic QR, scan analytics and hosted files require an online server and cannot operate offline.</p>
+      <p class="note" data-i18n="serverFeatures">Dynamic QR, scan analytics and hosted files require an online server and cannot operate offline.</p><div class="form-tip" data-i18n="hostingNote">For PDFs, videos, menus, reviews or hosted landing pages: first publish your content, then encode its HTTPS URL.</div>
      </div></details></section>
    </div>
    <aside class="panel neo-card preview-panel" aria-labelledby="previewHeading">
@@ -1437,7 +1463,7 @@ return { QRCode: requireLocal("index"), Ecc: requireLocal("QRErrorCorrectLevel")
    No se requiere Internet, servicio remoto ni compilación para utilizarlo.
    ====================================================================== */
 /* Mantener las claves históricas de almacenamiento permite conservar las preferencias y datos de usuarios que actualizan desde QR Atelier. */
-const APP = Object.freeze({name:'QR Maker',version:'1.2.3',author:'Raymundo Ortiz',github:'https://github.com/FireRayo/',storage:'qr-atelier-v1',langKey:'qr-atelier-lang',themeKey:'qr-atelier-theme', maxImage:8192});
+const APP = Object.freeze({name:'QR Maker',version:'1.3.0',author:'Raymundo Ortiz',github:'https://github.com/FireRayo/',storage:'qr-atelier-v1',langKey:'qr-atelier-lang',themeKey:'qr-atelier-theme', maxImage:8192});
 const $ = id => document.getElementById(id);
 const safeText = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const encoder = new TextEncoder();
@@ -1519,12 +1545,62 @@ const FIELD_LABELS={
 const TYPES={
  url:['Website / URL','Sitio web / URL','Sito web / URL','Site / URL'],text:['Plain text','Texto libre','Testo libero','Texto simples'],phone:['Telephone','Teléfono','Telefono','Telefone'],sms:['SMS message','Mensaje SMS','Messaggio SMS','Mensagem SMS'],email:['Email','Correo electrónico','Email','E-mail'],wifi:['Wi-Fi access','Acceso Wi-Fi','Accesso Wi-Fi','Acesso Wi-Fi'],vcard:['vCard contact','Contacto vCard','Contatto vCard','Contato vCard'],mecard:['MeCard contact','Contacto MeCard','Contatto MeCard','Contato MeCard'],geo:['Coordinates','Coordenadas','Coordinate','Coordenadas'],maps:['Maps directions','Indicaciones de mapa','Indicazioni mappa','Rotas no mapa'],event:['Calendar event','Evento de calendario','Evento calendario','Evento no calendário'],whatsapp:['WhatsApp','WhatsApp','WhatsApp','WhatsApp'],telegram:['Telegram','Telegram','Telegram','Telegram'],signal:['Signal link','Enlace Signal','Link Signal','Link Signal'],social:['Social profile','Perfil social','Profilo social','Perfil social'],meeting:['Video meeting','Videollamada','Videochiamata','Videochamada'],appstore:['App store link','Enlace a tienda de apps','Link app store','Link loja de aplicativos'],pdf:['PDF document URL','Enlace a PDF','Link PDF','Link PDF'],file:['File download URL','Descarga de archivo','Download file','Download arquivo'],form:['Form / survey','Formulario / encuesta','Modulo / sondaggio','Formulário / pesquisa'],payment:['Payment link','Enlace de pago','Link di pagamento','Link de pagamento'],pix:['PIX Brasil (static BR Code)','PIX Brasil (BR Code estático)','PIX Brasile (BR Code statico)','PIX Brasil (BR Code estático)'],sepa:['SEPA payment (EPC)','Transferencia SEPA (EPC)','Pagamento SEPA (EPC)','Pagamento SEPA (EPC)'],crypto:['Crypto payment','Pago con criptomoneda','Pagamento crypto','Pagamento cripto'],totp:['TOTP authenticator','Autenticador TOTP','Autenticatore TOTP','Autenticador TOTP'],json:['JSON data','Datos JSON','Dati JSON','Dados JSON'],xml:['XML data','Datos XML','Dati XML','Dados XML'],csv:['CSV data','Datos CSV','Dati CSV','Dados CSV'],product:['Product / equipment ID','ID producto / equipo','ID prodotto / macchina','ID produto / equipamento'],coupon:['Coupon / discount','Cupón / descuento','Buono / sconto','Cupom / desconto'],ticket:['Ticket / pass link','Enlace boleto / pase','Link biglietto','Link ingresso'],deeplink:['Deep link','Enlace profundo','Deep link','Link profundo'],custom:['Custom raw content','Contenido personalizado','Contenuto personalizzato','Conteúdo personalizado']
 };
+/* Traducciones añadidas en V1.3.0, sin repetir el diccionario principal. */
+const I18N_UPGRADE = {"en":{"catalogNote":"Static QR · linked content must already be published online. It cannot be hosted inside the QR.","frameDouble":"Double border","framePill":"Rounded frame","frameCorners":"Corner brackets","campaignMeta":"Project & campaign labels (local only)","projectLabel":"Project label","projectFolder":"Folder / category","campaignMedium":"Distribution medium","campaignStart":"Campaign start date","printCopies":"Planned print quantity","campaignNote":"Labels are local metadata, not QR data. No scan tracking is performed.","saveLibrary":"Save to local library","openLibrary":"Browse local library","landingBuilder":"Export landing page HTML","hostingNote":"Hosted features (PDF, MP3, gallery, app-store routing and analytics) require a published HTTPS link and/or an online service.","libraryTitle":"Local project library","librarySearch":"Search name, folder or content","libraryFolder":"Filter folder","libraryAll":"All folders","librarySaveOk":"Project saved to this browser.","librarySavedFail":"Unable to save in local storage (private mode, storage limit or large logo). Export JSON instead.","libraryLoad":"Open project","libraryDelete":"Delete","libraryDeleteAsk":"Delete this saved project?","libraryEmpty":"No saved projects match this filter.","libraryHelp":"Projects remain in this browser only; export JSON for backups. Sensitive TOTP projects are not stored.","librarySaveSensitive":"TOTP secrets cannot be saved to the local library. Export JSON with care instead.","campaignInvalid":"Print quantity must be a non-negative integer.","landingTitle":"Landing page (standalone HTML)","landingHelp":"Export a mobile-friendly local HTML page. To make its QR work for other people, upload the page to your own HTTPS hosting and then encode the resulting URL.","landingName":"Page title","landingDescription":"Description","landingLinks":"Links (one per line: label | https://address)","landingCreate":"Download HTML page","landingInvalid":"Enter a title and at least one valid HTTPS link, using Label | URL.","landingDownloaded":"Landing page HTML downloaded. Publish the HTML separately and use its public URL in a QR.","linkOnlyHelp":"This QR contains a link only. It does not upload the file or create a hosted page.","twitterMessage":"Post text","twitterTags":"Hashtags (comma-separated)","androidUrl":"Google Play URL","iosUrl":"Apple App Store URL","singleStore":"Target store (static)","ratingNote":"Use the published rating or review URL of the provider.","templateNotDynamic":"Static link: no automatic device routing or changes after printing."},"es":{"catalogNote":"QR estático · el contenido enlazado debe estar publicado. No se aloja dentro del QR.","frameDouble":"Borde doble","framePill":"Marco redondeado","frameCorners":"Esquinas decorativas","campaignMeta":"Etiquetas de proyecto y campaña (solo locales)","projectLabel":"Nombre del proyecto","projectFolder":"Carpeta / categoría","campaignMedium":"Medio de distribución","campaignStart":"Inicio de campaña","printCopies":"Cantidad prevista de impresiones","campaignNote":"Son metadatos locales, no datos del QR. No se registran escaneos.","saveLibrary":"Guardar en biblioteca local","openLibrary":"Explorar biblioteca local","landingBuilder":"Exportar página HTML","hostingNote":"Funciones alojadas (PDF, MP3, galería, tiendas y estadísticas) necesitan una URL HTTPS publicada o un servicio online.","libraryTitle":"Biblioteca local de proyectos","librarySearch":"Buscar nombre, carpeta o contenido","libraryFolder":"Filtrar carpeta","libraryAll":"Todas las carpetas","librarySaveOk":"Proyecto guardado en este navegador.","librarySavedFail":"No se pudo guardar localmente (modo privado, límite o logotipo grande). Exporta el JSON.","libraryLoad":"Abrir proyecto","libraryDelete":"Eliminar","libraryDeleteAsk":"¿Eliminar este proyecto guardado?","libraryEmpty":"No hay proyectos que coincidan con el filtro.","libraryHelp":"Los proyectos permanecen solo en este navegador; respalda con JSON. No se guardan proyectos TOTP.","librarySaveSensitive":"No se guardan secretos TOTP en la biblioteca local. Exporta JSON con precaución.","campaignInvalid":"La cantidad de impresiones debe ser un entero no negativo.","landingTitle":"Página de destino (HTML independiente)","landingHelp":"Exporta una página HTML adaptable a móviles. Para que su QR funcione para otros, súbela a tu propio alojamiento HTTPS y codifica su URL pública.","landingName":"Título de la página","landingDescription":"Descripción","landingLinks":"Enlaces (por línea: etiqueta | https://dirección)","landingCreate":"Descargar página HTML","landingInvalid":"Escribe título y al menos un enlace HTTPS válido en formato Etiqueta | URL.","landingDownloaded":"Página HTML descargada. Publícala por separado y utiliza su URL pública en un QR.","linkOnlyHelp":"Este QR solo contiene un enlace: no sube archivos ni aloja páginas.","twitterMessage":"Texto de publicación","twitterTags":"Hashtags (separados por comas)","androidUrl":"URL Google Play","iosUrl":"URL Apple App Store","singleStore":"Tienda de destino (estática)","ratingNote":"Usa la URL de valoración publicada por el proveedor.","templateNotDynamic":"Enlace estático: no cambia tras imprimir y no detecta automáticamente el dispositivo."},"it":{"catalogNote":"QR statico · il contenuto collegato deve essere già pubblicato online. Il QR non ospita file.","frameDouble":"Bordo doppio","framePill":"Cornice arrotondata","frameCorners":"Angoli decorativi","campaignMeta":"Etichette progetto e campagna (solo locali)","projectLabel":"Nome del progetto","projectFolder":"Cartella / categoria","campaignMedium":"Canale di distribuzione","campaignStart":"Inizio campagna","printCopies":"Numero di stampe previste","campaignNote":"Metadati locali, non contenuti QR. Nessun tracciamento scansioni.","saveLibrary":"Salva nella libreria locale","openLibrary":"Esplora libreria locale","landingBuilder":"Esporta pagina HTML","hostingNote":"Funzioni ospitate (PDF, MP3, galleria, app store e statistiche) richiedono link HTTPS pubblicati o un servizio online.","libraryTitle":"Libreria locale dei progetti","librarySearch":"Cerca nome, cartella o contenuto","libraryFolder":"Filtra cartella","libraryAll":"Tutte le cartelle","librarySaveOk":"Progetto salvato in questo browser.","librarySavedFail":"Salvataggio locale non riuscito (modalità privata, limite o logo grande). Esporta JSON.","libraryLoad":"Apri progetto","libraryDelete":"Elimina","libraryDeleteAsk":"Eliminare questo progetto salvato?","libraryEmpty":"Nessun progetto corrispondente.","libraryHelp":"I progetti restano solo in questo browser; esegui backup JSON. I progetti TOTP non vengono salvati.","librarySaveSensitive":"Non è possibile salvare segreti TOTP nella libreria locale. Esporta JSON con cautela.","campaignInvalid":"Il numero di stampe deve essere un intero non negativo.","landingTitle":"Pagina di destinazione (HTML autonomo)","landingHelp":"Esporta una pagina HTML responsive. Per far funzionare il QR pubblicamente, caricala su un hosting HTTPS e usa il suo URL.","landingName":"Titolo pagina","landingDescription":"Descrizione","landingLinks":"Link (uno per riga: etichetta | https://indirizzo)","landingCreate":"Scarica pagina HTML","landingInvalid":"Inserisci titolo e almeno un link HTTPS valido in formato Etichetta | URL.","landingDownloaded":"Pagina HTML scaricata. Pubblicala e usa il suo URL pubblico nel QR.","linkOnlyHelp":"Questo QR contiene solo un link: non carica file né ospita pagine.","twitterMessage":"Testo post","twitterTags":"Hashtag (separati da virgole)","androidUrl":"URL Google Play","iosUrl":"URL Apple App Store","singleStore":"Store di destinazione (statico)","ratingNote":"Usa il link di valutazione pubblicato dal servizio.","templateNotDynamic":"Link statico: non cambia dopo la stampa e non rileva automaticamente il dispositivo."},"pt-BR":{"catalogNote":"QR estático · o conteúdo vinculado deve estar publicado. O QR não hospeda arquivos.","frameDouble":"Borda dupla","framePill":"Moldura arredondada","frameCorners":"Cantoneiras decorativas","campaignMeta":"Rótulos do projeto e campanha (somente local)","projectLabel":"Nome do projeto","projectFolder":"Pasta / categoria","campaignMedium":"Meio de distribuição","campaignStart":"Início da campanha","printCopies":"Quantidade de impressões prevista","campaignNote":"Metadados locais, não dados QR. Sem rastreamento de leituras.","saveLibrary":"Salvar na biblioteca local","openLibrary":"Explorar biblioteca local","landingBuilder":"Exportar página HTML","hostingNote":"Funções hospedadas (PDF, MP3, galeria, lojas e estatísticas) exigem URL HTTPS publicada ou serviço online.","libraryTitle":"Biblioteca local de projetos","librarySearch":"Buscar nome, pasta ou conteúdo","libraryFolder":"Filtrar pasta","libraryAll":"Todas as pastas","librarySaveOk":"Projeto salvo neste navegador.","librarySavedFail":"Falha ao salvar localmente (modo privado, limite ou logo grande). Exporte JSON.","libraryLoad":"Abrir projeto","libraryDelete":"Excluir","libraryDeleteAsk":"Excluir este projeto salvo?","libraryEmpty":"Nenhum projeto corresponde ao filtro.","libraryHelp":"Projetos ficam somente neste navegador; faça backup JSON. Segredos TOTP não são salvos.","librarySaveSensitive":"Segredos TOTP não podem ser salvos na biblioteca. Exporte JSON com cuidado.","campaignInvalid":"A quantidade deve ser um inteiro não negativo.","landingTitle":"Página de destino (HTML independente)","landingHelp":"Exporte página HTML responsiva. Para usar QR com outras pessoas, publique a página no seu próprio servidor HTTPS e codifique a URL.","landingName":"Título da página","landingDescription":"Descrição","landingLinks":"Links (um por linha: rótulo | https://endereço)","landingCreate":"Baixar página HTML","landingInvalid":"Digite título e ao menos um link HTTPS válido no formato Rótulo | URL.","landingDownloaded":"Página HTML baixada. Publique separadamente e utilize a URL pública no QR.","linkOnlyHelp":"Este QR contém apenas um link: não envia arquivos nem hospeda páginas.","twitterMessage":"Texto do post","twitterTags":"Hashtags (separadas por vírgulas)","androidUrl":"URL Google Play","iosUrl":"URL Apple App Store","singleStore":"Loja de destino (estática)","ratingNote":"Use o endereço de avaliação publicado pelo provedor.","templateNotDynamic":"Link estático: não muda após impressão e não detecta automaticamente o dispositivo."}};
+for (const [language, messages] of Object.entries(I18N_UPGRADE)) Object.assign(I18N[language], messages);
+Object.assign(FIELD_LABELS, {"androidUrl":["Google Play URL","URL de Google Play","URL Google Play","URL Google Play"],"iosUrl":["Apple App Store URL","URL de App Store","URL App Store","URL App Store"],"appChoice":["Destination store","Tienda de destino","Store di destinazione","Loja de destino"],"post":["Post text","Texto de publicación","Testo del post","Texto da postagem"],"hashtags":["Hashtags","Hashtags","Hashtag","Hashtags"],"link":["Published HTTPS URL","URL HTTPS publicada","URL HTTPS pubblicato","URL HTTPS publicada"],"profile":["Profile name or URL","Usuario o URL","Profilo o URL","Perfil ou URL"]});
+Object.assign(TYPES, {"vcardplus":["vCard Plus (static contact)","vCard Plus (contacto estático)","vCard Plus (contatto statico)","vCard Plus (contato estático)"],"facebook":["Facebook page","Página Facebook","Pagina Facebook","Página Facebook"],"twitter":["X / Twitter post","Publicación X / Twitter","Post X / Twitter","Postagem X / Twitter"],"instagram":["Instagram profile","Perfil Instagram","Profilo Instagram","Perfil Instagram"],"tiktok":["TikTok profile","Perfil TikTok","Profilo TikTok","Perfil TikTok"],"linkedin":["LinkedIn profile","Perfil LinkedIn","Profilo LinkedIn","Perfil LinkedIn"],"spotify":["Spotify playlist / track","Lista / canción Spotify","Playlist / brano Spotify","Playlist / faixa Spotify"],"tripadvisor":["Tripadvisor review URL","Valoración Tripadvisor","Recensione Tripadvisor","Avaliação Tripadvisor"],"youtube":["YouTube video / channel","Video / canal YouTube","Video / canale YouTube","Vídeo / canal YouTube"],"video":["Video URL","Enlace a video","Link video","Link para vídeo"],"mp3":["MP3 / audio URL","Enlace MP3 / audio","Link MP3 / audio","Link MP3 / áudio"],"gallery":["Image gallery URL","Enlace a galería","Link galleria","Link galeria"],"business":["Business page URL","Página de empresa","Pagina azienda","Página empresa"],"rating":["Rating page URL","Página de valoraciones","Pagina valutazioni","Página avaliações"],"feedback":["Feedback form URL","Formulario de comentarios","Modulo feedback","Formulário feedback"],"restaurant":["Restaurant menu URL","Menú de restaurante","Menù ristorante","Cardápio restaurante"],"messenger":["Facebook Messenger","Facebook Messenger","Facebook Messenger","Facebook Messenger"],"registration":["Registration URL","Enlace de registro","Link registrazione","Link inscrição"],"queue":["Queue / waiting list URL","Lista de espera / turnos","Lista di attesa / coda","Fila / lista de espera"],"googleforms":["Google Forms","Formularios Google","Moduli Google","Formulários Google"],"googlereview":["Google Reviews link","Enlace reseñas Google","Link recensioni Google","Link avaliações Google"],"yelp":["Yelp link","Enlace Yelp","Link Yelp","Link Yelp"],"ebook":["Ebook / digital magazine URL","Libro / revista digital","Ebook / rivista digitale","Livro / revista digital"],"barcode2d":["2D barcode / product URL","Código 2D / producto","Codice 2D / prodotto","Código 2D / produto"],"appmulti":["App store choice (static)","Tienda de apps (estática)","Store app (statico)","Loja de apps (estática)"],"socialhub":["Social links page URL","Página de redes sociales","Pagina social","Página de redes sociais"],"dynamiclink":["Existing redirect URL (static QR)","URL redirigida existente (QR estático)","URL redirect esistente (QR statico)","URL de redirecionamento existente (QR estático)"]});
+const PRESET_LABELS={ocean:['Ocean','Océano','Oceano','Oceano'],forest:['Forest','Bosque','Foresta','Floresta'],rose:['Rose','Rosa','Rosa','Rosa'],indigo:['Indigo','Índigo','Indaco','Índigo']};
+Object.assign(OPTION_TEXT,PRESET_LABELS);
 const langs=['en','es','it','pt-BR'];
 let locale=storage.getItem(APP.langKey)||'en';if(!I18N[locale])locale='en';
 function langIndex(){return Math.max(0,langs.indexOf(locale));}
 function t(key){return I18N[locale][key]||I18N.en[key]||key;}
 function trField(key){return (FIELD_LABELS[key]||[key])[langIndex()]||key;}
 function trType(key){return (TYPES[key]||[key])[langIndex()]||key;}
+
+/* Catálogo organizado por ámbitos. Todos los elementos de TYPES tienen grupo;
+   los que se añadan en futuras versiones aparecerán en "Otros". */
+const TYPE_GROUPS={
+ essentials:['url','text','phone','sms','email','wifi','vcard','mecard','vcardplus','geo','maps','event'],
+ social:['whatsapp','telegram','signal','social','facebook','twitter','instagram','tiktok','linkedin','spotify','tripadvisor','youtube','messenger','socialhub'],
+ media:['meeting','appstore','appmulti','pdf','file','video','mp3','gallery','ebook','restaurant'],
+ business:['form','googleforms','feedback','rating','googlereview','yelp','business','registration','queue','payment','crypto','pix','sepa','coupon','ticket','dynamiclink'],
+ technology:['totp','json','xml','csv','product','barcode2d','deeplink','custom']
+};
+const GROUP_TEXT={
+ essentials:['General & contact','General y contactos','Generale e contatti','Geral e contatos'],
+ social:['Social media & platforms','Redes sociales y plataformas','Social e piattaforme','Redes sociais e plataformas'],
+ media:['Media & downloadable files','Multimedia y archivos','Multimedia e file','Mídia e arquivos'],
+ business:['Business, payments & forms','Empresas, pagos y formularios','Aziende, pagamenti e moduli','Negócios, pagamentos e formulários'],
+ technology:['Technical & advanced','Técnicos y avanzados','Tecnici e avanzati','Técnicos e avançados'],
+ others:['Other types','Otros tipos','Altri tipi','Outros tipos']
+};
+function buildTypeSelector(){
+ const included=new Set(),html=[];
+ for(const [group,types] of Object.entries(TYPE_GROUPS)){
+  const items=types.filter(k=>TYPES[k]);
+  items.forEach(k=>included.add(k));
+  html.push(`<optgroup label="${safeText(GROUP_TEXT[group][langIndex()])}">${items.map(k=>`<option value="${k}">${safeText(trType(k))}</option>`).join('')}</optgroup>`);
+ }
+ const other=Object.keys(TYPES).filter(k=>!included.has(k));
+ if(other.length)html.push(`<optgroup label="${safeText(GROUP_TEXT.others[langIndex()])}">${other.map(k=>`<option value="${k}">${safeText(trType(k))}</option>`).join('')}</optgroup>`);
+ return html.join('');
+}
+/* Marcadores de campos auxiliares y nombres de nuevos presets en 4 idiomas. */
+const EXTRA_TEXT={
+ en:{ocean:'Ocean',forest:'Forest',rose:'Rose',indigo:'Indigo',metaProject:'Product launch',metaFolder:'Marketing',metaMedium:'Poster, packaging, print...',metaCount:'100',landingLinkHint:'Website | https://example.com\nInstagram | https://instagram.com/username'},
+ es:{ocean:'Océano',forest:'Bosque',rose:'Rosa',indigo:'Índigo',metaProject:'Lanzamiento',metaFolder:'Marketing',metaMedium:'Cartel, embalaje, impresión...',metaCount:'100',landingLinkHint:'Sitio web | https://example.com\nInstagram | https://instagram.com/username'},
+ it:{ocean:'Oceano',forest:'Foresta',rose:'Rosa',indigo:'Indaco',metaProject:'Lancio prodotto',metaFolder:'Marketing',metaMedium:'Poster, confezione, stampa...',metaCount:'100',landingLinkHint:'Sito web | https://example.com\nInstagram | https://instagram.com/username'},
+ 'pt-BR':{ocean:'Oceano',forest:'Floresta',rose:'Rosa',indigo:'Índigo',metaProject:'Lançamento',metaFolder:'Marketing',metaMedium:'Cartaz, embalagem, impressão...',metaCount:'100',landingLinkHint:'Site | https://example.com\nInstagram | https://instagram.com/username'}
+};
+for(const [lng,values]of Object.entries(EXTRA_TEXT))Object.assign(I18N[lng],values);
+Object.assign(PLACEHOLDER_TEXT,{
+ 'page-name or https://...':['nome-da-pagina or https://...','nombre-de-página o https://...','nome-pagina o https://...','nome-da-página ou https://...'],
+ 'https://example.com/page':['https://example.com/page','https://ejemplo.com/pagina','https://esempio.com/pagina','https://exemplo.com/pagina'],
+ 'qr,marketing':['qr,marketing','qr,marketing','qr,marketing','qr,marketing']
+});
+
 /* ======================================================================
    02. ESQUEMAS DE CONTENIDO
    Cada tipo declara sus campos en lugar de duplicar formularios HTML.
@@ -1556,6 +1632,20 @@ const CONTENT_SCHEMAS={
  ticket:single('url','url','https://tickets.example.com/ticket/123'),
  deeplink:single('url','text','myapp://screen/123'),custom:single('text','textarea','Custom encoded value')
 };
+
+/* Plantillas del catálogo: las URLs se codifican tal cual, sin almacenar
+   ficheros ni fingir que existe una página de destino en este HTML. */
+const PUBLISHED_LINK_TYPES=['tripadvisor','spotify','youtube','video','mp3','gallery','business','rating','feedback','restaurant','registration','queue','googleforms','googlereview','yelp','ebook','barcode2d','socialhub','dynamiclink'];
+for(const type of PUBLISHED_LINK_TYPES)CONTENT_SCHEMAS[type]=single('link','url','https://example.com/page');
+CONTENT_SCHEMAS.vcardplus=CONTENT_SCHEMAS.vcard;
+CONTENT_SCHEMAS.facebook=single('profile','text','page-name or https://...');
+CONTENT_SCHEMAS.instagram=single('profile','text','username or URL');
+CONTENT_SCHEMAS.tiktok=single('profile','text','username or URL');
+CONTENT_SCHEMAS.linkedin=single('profile','text','username or URL');
+CONTENT_SCHEMAS.messenger=single('profile','text','page-name or https://...');
+CONTENT_SCHEMAS.twitter=[field('post','textarea','Hello!',{wide:true}),field('url','url','https://example.com'),field('hashtags','text','qr,marketing')];
+CONTENT_SCHEMAS.appmulti=[field('appChoice','select','',{options:[['android','Google Play'],['ios','Apple App Store']]}),field('androidUrl','url','https://play.google.com/store/apps/details?id=...',{wide:true}),field('iosUrl','url','https://apps.apple.com/app/...',{wide:true})];
+
 const state={type:'url',fields:{url:{url:'https://example.com'}},logoData:'',logoFilename:'',logoLayout:null,qr:null,svg:'',payload:'',updateTimer:null,busy:false,previousFocus:null};
 /* Devuelve los valores del tipo actual desde su formulario dinámico. */
 function getFields(){const data={};for(const el of $('contentFields').querySelectorAll('[data-field]'))data[el.dataset.field]=el.type==='checkbox'?el.checked:el.value;return data;}
@@ -1573,6 +1663,7 @@ function renderFields(){
   return `<div class="field ${f.wide?'wide':''}"><label for="field-${f.id}">${safeText(trField(f.id))}</label>${input}</div>`;
  }).join('');
  if(state.type==='totp')showStatus(t('totpWarn'));
+ $('catalogNote').textContent=state.type==='appmulti'?t('templateNotDynamic'):PUBLISHED_LINK_TYPES.includes(state.type)?t('linkOnlyHelp'):t('catalogNote');
 }
 const need=(value,key='badInput')=>{if(!String(value??'').trim())throw new Error(t(key));return String(value).trim();};
 const validateUrl=(value,allowCustom=false)=>{const s=need(value);try{const url=new URL(s);if(allowCustom||['https:','http:'].includes(url.protocol))return url.href;}catch{}throw new Error(t('invalidUrl'));};
@@ -1594,7 +1685,29 @@ function crc16Pix(text){let crc=0xFFFF;for(const c of encoder.encode(text)){crc^
    Todas las excepciones se traducen a mensajes útiles de interfaz.
 */
 function buildPayload(type, f){
+ if(PUBLISHED_LINK_TYPES.includes(type))return validateUrl(f.link);
  switch(type){
+
+  /* QR estáticos adicionales equivalentes a enlaces publicables.
+     Se comprueba la URL, pero no se emula el alojamiento de contenido. */
+  case 'vcardplus': return buildPayload('vcard',f);
+  case 'facebook':case 'instagram':case 'tiktok':case 'linkedin':case 'messenger':{
+   const value=need(f.profile);
+   if(/^https?:\/\//i.test(value))return validateUrl(value);
+   const username=value.replace(/^@/,'');
+   if(!/^[a-zA-Z0-9_.-]{2,80}$/.test(username))throw new Error(t('badInput'));
+   const root={facebook:'https://www.facebook.com/',instagram:'https://www.instagram.com/',tiktok:'https://www.tiktok.com/@',linkedin:'https://www.linkedin.com/in/',messenger:'https://m.me/'}[type];
+   return root+encodeURIComponent(username);
+  }
+  case 'twitter':{
+   if(!need(f.post||f.url||f.hashtags))throw new Error(t('badInput'));
+   const data=encodeQuery({text:f.post||'',url:f.url?validateUrl(f.url):'',hashtags:(f.hashtags||'').replace(/#/g,'').replace(/\s+/g,'')});
+   return 'https://twitter.com/intent/tweet?'+data;
+  }
+  case 'appmulti':{
+   const key=f.appChoice==='ios'?'iosUrl':'androidUrl';
+   return validateUrl(f[key]);
+  }
   case 'url':case 'signal':case 'meeting':case 'appstore':case 'pdf':case 'file':case 'form':case 'payment':case 'ticket':return validateUrl(f.url);
   case 'deeplink':return validateUrl(f.url,true);
   case 'text':case 'custom':return need(f.text,'noContent');
@@ -1826,7 +1939,7 @@ function buildLogoAwareQR(payload,options){
    y exportaciones rasterizadas se obtienen de exactamente el mismo diseño.
    ====================================================================== */
 const STYLES=[['square','square'],['rounded','rounded'],['dots','dots'],['extra','extraRounded'],['classy','classy'],['classy-rounded','classyRounded']];
-const PRESETS={plain:{style:'square',foreground:'#20252B',background:'#FFFFFF',cornerColor:'#20252B',centerColor:'#20252B',gradient:'none',finderStyle:'square'},soft:{style:'rounded',foreground:'#2D467B',background:'#FFFFFF',cornerColor:'#2D467B',centerColor:'#557BD9',gradient:'none',finderStyle:'rounded'},night:{style:'dots',foreground:'#E6EAF0',background:'#20252B',cornerColor:'#E6EAF0',centerColor:'#739DF2',gradient:'none',finderStyle:'rounded'},warm:{style:'classy-rounded',foreground:'#663E42',background:'#FFFAF0',cornerColor:'#663E42',centerColor:'#D47B5B',gradient:'none',finderStyle:'rounded'}};
+const PRESETS={plain:{style:'square',foreground:'#20252B',background:'#FFFFFF',cornerColor:'#20252B',centerColor:'#20252B',gradient:'none',finderStyle:'square'},soft:{style:'rounded',foreground:'#2D467B',background:'#FFFFFF',cornerColor:'#2D467B',centerColor:'#557BD9',gradient:'none',finderStyle:'rounded'},night:{style:'dots',foreground:'#E6EAF0',background:'#20252B',cornerColor:'#E6EAF0',centerColor:'#739DF2',gradient:'none',finderStyle:'rounded'},warm:{style:'classy-rounded',foreground:'#663E42',background:'#FFFAF0',cornerColor:'#663E42',centerColor:'#D47B5B',gradient:'none',finderStyle:'rounded'},ocean:{style:'rounded',foreground:'#124E66',background:'#F1FAFD',cornerColor:'#124E66',centerColor:'#267FA0',gradient:'none',finderStyle:'rounded'},forest:{style:'dots',foreground:'#28543A',background:'#F5FCF6',cornerColor:'#28543A',centerColor:'#38875A',gradient:'none',finderStyle:'circle'},rose:{style:'classy',foreground:'#8C3654',background:'#FFF7FA',cornerColor:'#8C3654',centerColor:'#D97899',gradient:'none',finderStyle:'rounded'},indigo:{style:'extra-rounded',foreground:'#443C88',background:'#FAF9FF',cornerColor:'#443C88',centerColor:'#8076D8',gradient:'none',finderStyle:'rounded'}};
 let currentStyle='rounded';
 function colorValue(id){return /^#[\da-fA-F]{6}$/.test($(id).value)?$(id).value:'#000000';}
 function getOptions(){return {style:currentStyle,foreground:colorValue('foreground'),background:colorValue('background'),cornerColor:colorValue('cornerColor'),centerColor:colorValue('centerColor'),transparent:$('transparent').checked,gradient:$('gradient').value,gradientColor:colorValue('gradientColor'),gradientAngle:Math.min(360,Math.max(0,Number($('gradientAngle').value)||0)),finderStyle:$('finderStyle').value,logoData:state.logoData,logoSize:Math.min(22,Math.max(8,Number($('logoSize').value))),logoPadding:Number($('logoPadding').value),logoBackground:$('logoBackground').checked,frameText:$('frameText').value,frameStyle:$('frameStyle').value,quietZone:Math.min(20,Math.max(0,Number($('quietZone').value)||0)),ecc:$('ecc').value,version:Number($('qrVersion').value),mask:Number($('mask').value),encoding:$('encoding').value,resolution:outputSize()};}
@@ -1893,7 +2006,13 @@ function buildSvg(qr,options){
   parts.push(`<image x="${px}" y="${py}" width="${size}" height="${size}" preserveAspectRatio="xMidYMid meet" href="${options.logoData}"/>`);
  }
  if(options.frameStyle!=='none'){
-  if(options.frameStyle==='border')parts.push(`<rect x="${Math.max(.2,q-1.8)}" y="${Math.max(.2,q-1.8)}" width="${n+3.6}" height="${n+3.6}" rx="1.2" fill="none" stroke="${options.cornerColor}" stroke-width=".32"/>`);
+  if(['border','double','pill'].includes(options.frameStyle))parts.push(`<rect x="${Math.max(.2,q-1.8)}" y="${Math.max(.2,q-1.8)}" width="${n+3.6}" height="${n+3.6}" rx="${options.frameStyle==='pill'?3.1:options.frameStyle==='corners'?0:1.2}" fill="none" stroke="${options.cornerColor}" stroke-width=".32"/>`);
+  if(options.frameStyle==='double')parts.push(`<rect x="${Math.max(.2,q-2.8)}" y="${Math.max(.2,q-2.8)}" width="${n+5.6}" height="${n+5.6}" rx="2" fill="none" stroke="${options.cornerColor}" stroke-width=".16"/>`);
+  if(options.frameStyle==='corners'){
+   // Los corchetes son puramente decorativos y quedan fuera del área QR.
+   const x=Math.max(.2,q-1.8),y=x,a=n+3.6,c=2.2;
+   parts.push(`<path d="M${x+c} ${y}H${x}V${y+c} M${x+a-c} ${y}H${x+a}V${y+c} M${x} ${y+a-c}V${y+a}H${x+c} M${x+a-c} ${y+a}H${x+a}V${y+a-c}" stroke="${options.cornerColor}" stroke-width=".55" fill="none"/>`);
+  }
   if(options.frameText)parts.push(`<text x="${total/2}" y="${n+q*2+extra*.59}" text-anchor="middle" dominant-baseline="middle" font-family="Arial,sans-serif" font-size="${fontSize}" font-weight="700" fill="${options.cornerColor}">${safeText(options.frameText)}</text>`);
  }
  parts.push('</svg>');return parts.join('');
@@ -2026,8 +2145,11 @@ function safeFilename(name){return String(name||'qr-maker').replace(/[\\/:*?"<>|
    se guarda automáticamente, salvo si el usuario habilita el historial.
    El proyecto JSON es un archivo que descarga explícitamente el usuario.
    ====================================================================== */
-const SETTING_IDS=['foreground','background','cornerColor','centerColor','transparent','gradient','gradientColor','gradientAngle','finderStyle','logoSize','logoPadding','logoBackground','frameText','frameStyle','quietZone','ecc','qrVersion','mask','encoding','resolution','customResolution','filename','format','saveHistory'];
-function collectProject(){rememberFields();const settings={};for(const id of SETTING_IDS){const el=$(id);settings[id]=el.type==='checkbox'?el.checked:el.value;}return {schema:1,application:APP.name,version:APP.version,type:state.type,fields:state.fields,settings,style:currentStyle,logoData:state.logoData,logoFilename:state.logoFilename};}
+const SETTING_IDS=['foreground','background','cornerColor','centerColor','transparent','gradient','gradientColor','gradientAngle','finderStyle','logoSize','logoPadding','logoBackground','frameText','frameStyle','quietZone','ecc','qrVersion','mask','encoding','resolution','customResolution','filename','format','saveHistory','projectLabel','projectFolder','campaignMedium','campaignStart','printCopies'];
+function collectProject(){rememberFields();const settings={};for(const id of SETTING_IDS){const el=$(id);settings[id]=el.type==='checkbox'?el.checked:el.value;}
+ /* El secreto TOTP de un formulario anterior no debe filtrarse a proyectos ajenos. */
+ const fields={...state.fields};if(state.type!=='totp')delete fields.totp;
+ return {schema:1,application:APP.name,version:APP.version,type:state.type,fields,settings,style:currentStyle,logoData:state.logoData,logoFilename:state.logoFilename};}
 function loadProject(project){
  if(!project||project.schema!==1||!CONTENT_SCHEMAS[project.type]||typeof project.settings!=='object'||typeof project.fields!=='object')throw new Error(t('projectError'));
  state.type=project.type;state.fields=project.fields;$('contentType').value=state.type;
@@ -2047,7 +2169,7 @@ function storeHistory(){if(!$('saveHistory').checked||state.type==='totp'||!stat
 function showStatus(message,level='info'){$('status').textContent=message;$('status').dataset.level=level;}
 function showToast(message){const el=$('toast');el.textContent=message;el.classList.add('visible');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>el.classList.remove('visible'),3300);}
 function showModal(title,html){state.previousFocus=document.activeElement;$('modalContent').innerHTML=`<div class="section-heading"><div><h2 id="modalTitle">${safeText(title)}</h2></div></div>${html}`;$('modalBackdrop').classList.add('open');$('modal').focus();}
-function closeModal(){$('modalBackdrop').classList.remove('open');$('modalContent').innerHTML='';state.previousFocus?.focus?.();}
+function closeModal(){$('modal').classList.remove('wide-modal');$('modalBackdrop').classList.remove('open');$('modalContent').innerHTML='';state.previousFocus?.focus?.();}
 async function copyText(value){try{if(!navigator.clipboard?.writeText)throw Error();await navigator.clipboard.writeText(value);showToast(t('copyOk'));}catch{const area=document.createElement('textarea');area.value=value;area.style.position='fixed';area.style.opacity='0';document.body.append(area);area.select();let ok=false;try{ok=document.execCommand('copy');}catch{}area.remove();showToast(t(ok?'copyOk':'copyFail'));}}
 async function importLogo(file){
  if(!file)return;
@@ -2113,7 +2235,8 @@ function applyLanguage(value){locale=I18N[value]?value:'en';try{storage.setItem(
  for(const option of $('mask').options)if(option.value!=='-1')option.textContent=localOption('Mask')+' '+option.value;
 
  for(const [id,key]of [['themeToggle','openSettings'],['modalClose','close']]){$(id).setAttribute('aria-label',t(key));$(id).title=t(key);}
- const type=state.type;$('contentType').innerHTML=Object.keys(TYPES).map(k=>`<option value="${k}">${safeText(trType(k))}</option>`).join('');$('contentType').value=type;
+ const type=state.type;$('contentType').innerHTML=buildTypeSelector();$('contentType').value=type;
+ for(const [id,key] of [['projectLabel','metaProject'],['projectFolder','metaFolder'],['campaignMedium','metaMedium'],['printCopies','metaCount']])$(id).placeholder=t(key);
  $('logoFileLabel').textContent=state.logoFilename||t('chooseLogo');
  renderFields();renderStyles();syncControls();refreshQr();
 }
@@ -2138,6 +2261,79 @@ function showHistory(){const entries=getHistory();showModal(t('historyTitle'),`<
 async function detectQr(source){if(typeof BarcodeDetector==='undefined')throw new Error(t('scanUnsupported'));const detector=new BarcodeDetector({formats:['qr_code']});return await detector.detect(source);}
 async function validateCurrent(){if(!state.svg)return;const node=$('validationText');try{const canvas=await svgToCanvas(state.svg,Math.min(1024,outputSize()));const codes=await detectQr(canvas);node.textContent=!codes.length?t('readNotFound'):codes.some(x=>x.rawValue===state.payload)?t('readOk'):t('readMismatch');}catch(error){node.textContent=error.message===t('scanUnsupported')?t('readNotAvailable'):t('readNotAvailable');}}
 async function readQrFile(file){if(!file)return;try{const bmp=await createImageBitmap(file);const codes=await detectQr(bmp);bmp.close();if(!codes.length)throw new Error(t('scanNotFound'));const content=codes[0].rawValue;showModal(t('scanTitle'),`<div class="field"><label>${safeText(t('scanResult'))}</label><textarea id="decodedQr" class="textarea" rows="8" readonly>${safeText(content)}</textarea></div><div class="row" style="margin-top:16px"><button class="btn" id="useDecoded">${safeText(t('useScan'))}</button><button class="btn" id="copyDecoded">${safeText(t('copyText'))}</button></div>`);}catch(e){showToast(e.message||t('readError'));}}
+
+/* =======================================================================
+   07.B. BIBLIOTECA LOCAL Y PÁGINAS HTML
+   - Guardado voluntario: nunca se almacena en segundo plano un proyecto.
+   - Sin secretos TOTP: un QR autenticador no debe acabar en el historial.
+   - Las páginas HTML son plantillas que el usuario debe publicar por separado.
+   ======================================================================= */
+const LIBRARY_KEY=APP.storage+'-projects';
+function getLibrary(){try{const data=JSON.parse(storage.getItem(LIBRARY_KEY)||'[]');return Array.isArray(data)?data.filter(v=>v&&v.project&&v.id).slice(0,120):[];}catch{return [];}}
+function setLibrary(items){
+ try{
+  const raw=JSON.stringify(items);
+  if(raw.length>3500000)return false;
+  storage.setItem(LIBRARY_KEY,raw);
+  return storage.getItem(LIBRARY_KEY)===raw;
+ }catch{return false;}
+}
+function saveCurrentToLibrary(){
+ if(state.type==='totp'){showToast(t('librarySaveSensitive'));return;}
+ if(!state.qr){showToast(t('badInput'));return;}
+ const amount=$('printCopies').value.trim();
+ if(amount&&(!/^\d+$/.test(amount)||Number(amount)>999999999)){showToast(t('campaignInvalid'));return;}
+ const project=collectProject(),list=getLibrary();
+ const entry={id:'p'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9),savedAt:new Date().toISOString(),label:($('projectLabel').value||$('filename').value||trType(state.type)).trim().slice(0,90),folder:$('projectFolder').value.trim().slice(0,80),description:state.payload.slice(0,180),project};
+ list.unshift(entry);
+ if(setLibrary(list.slice(0,80)))showToast(t('librarySaveOk'));
+ else showToast(t('librarySavedFail'));
+}
+function renderLibrary(){
+ const filter=($('librarySearch')?.value||'').toLocaleLowerCase(),folder=$('libraryFolderFilter')?.value||'';
+ const list=getLibrary(),folders=[...new Set(list.map(e=>e.folder).filter(Boolean))].sort();
+ const select=$('libraryFolderFilter');
+ const prior=folder;
+ select.innerHTML=`<option value="">${safeText(t('libraryAll'))}</option>`+folders.map(x=>`<option value="${safeText(x)}">${safeText(x)}</option>`).join('');
+ select.value=prior;
+ const filtered=list.filter(e=>(!folder||e.folder===folder)&&[e.label,e.folder,e.description].join(' ').toLocaleLowerCase().includes(filter));
+ $('libraryList').innerHTML=filtered.length?filtered.map(e=>`<div class="library-item"><strong>${safeText(e.label||trType(e.project.type))}</strong><div class="library-meta">${safeText(e.folder||'—')} · ${safeText(new Date(e.savedAt).toLocaleString(locale))} · ${safeText(trType(e.project.type))}<div>${safeText((e.description||'').slice(0,95))}</div></div><div class="library-actions"><button class="btn small" data-library-open="${safeText(e.id)}">${safeText(t('libraryLoad'))}</button><button class="btn small danger" data-library-delete="${safeText(e.id)}">${safeText(t('libraryDelete'))}</button></div></div>`).join(''):`<p class="fine">${safeText(t('libraryEmpty'))}</p>`;
+}
+function openLibrary(){
+ showModal(t('libraryTitle'),`<p class="form-tip">${safeText(t('libraryHelp'))}</p><div class="library-filters"><input id="librarySearch" class="input" aria-label="${safeText(t('librarySearch'))}" placeholder="${safeText(t('librarySearch'))}"><select id="libraryFolderFilter" class="select" aria-label="${safeText(t('libraryFolder'))}"></select></div><div id="libraryList" class="library-list"></div>`);
+ $('modal').classList.add('wide-modal');renderLibrary();
+ $('librarySearch').addEventListener('input',renderLibrary);
+ $('libraryFolderFilter').addEventListener('change',renderLibrary);
+}
+function escapeLandingText(value){return safeText(value).replace(/`/g,'&#96;');}
+function parseLandingLinks(value){
+ const lines=value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+ if(!lines.length||lines.length>20)throw new Error(t('landingInvalid'));
+ return lines.map(line=>{
+  const at=line.indexOf('|');if(at<1)throw new Error(t('landingInvalid'));
+  const label=line.slice(0,at).trim(),url=line.slice(at+1).trim();
+  if(!label||label.length>75)throw new Error(t('landingInvalid'));
+  const target=validateUrl(url);
+  if(!target.startsWith('https://'))throw new Error(t('landingInvalid'));
+  return {label,url:target};
+ });
+}
+function createLandingHtml(name,description,links){
+ // Sin scripts, imágenes remotas ni peticiones: HTML plano con enlaces HTTPS.
+ const rows=links.map(l=>`<a href="${escapeLandingText(l.url)}" rel="noopener noreferrer" target="_blank">${escapeLandingText(l.label)} ↗</a>`).join('\n');
+ return `<!doctype html>\n<html lang="${locale}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>${escapeLandingText(name)}</title><style>:root{color-scheme:light dark}*{box-sizing:border-box}body{margin:0;font:16px/1.55 system-ui,sans-serif;background:#DFE4EA;color:#30363B;min-height:100vh;padding:40px 18px}.page{max-width:640px;margin:auto;background:#E5E9EE;border-radius:26px;padding:33px;box-shadow:7px 7px 17px #C2C6CA,-7px -7px 17px #FFF}h1{margin:0 0 12px;font-size:clamp(26px,5vw,38px)}p{white-space:pre-wrap;overflow-wrap:anywhere;color:#687078}a{display:block;margin-top:15px;padding:15px 20px;color:#34559F;text-decoration:none;font-weight:700;border-radius:15px;background:#E5E9EE;box-shadow:3px 3px 8px #C2C6CA,-3px -3px 8px #FFF;overflow-wrap:anywhere}a:focus-visible{outline:3px solid #557BD9}a:hover{color:#20252B}@media(prefers-color-scheme:dark){body{background:#20252B;color:#E6EAF0}.page,a{background:#272C33;box-shadow:6px 6px 16px #181C21,-6px -6px 16px #323841}p{color:#9CA6B2}a{color:#8FB1FA}}</style></head><body><main class="page"><h1>${escapeLandingText(name)}</h1><p>${escapeLandingText(description)}</p><nav>${rows}</nav></main></body></html>`;
+}
+function openLandingBuilder(){
+ showModal(t('landingTitle'),`<p class="form-tip">${safeText(t('landingHelp'))}</p><div class="field-grid" style="margin-top:17px"><div class="field wide"><label for="landingName">${safeText(t('landingName'))}</label><input id="landingName" class="input" maxlength="100" value="${safeText($('projectLabel').value)}"></div><div class="field wide"><label for="landingDescription">${safeText(t('landingDescription'))}</label><textarea id="landingDescription" class="textarea" maxlength="1200"></textarea></div><div class="field wide"><label for="landingLinks">${safeText(t('landingLinks'))}</label><textarea id="landingLinks" class="textarea" rows="5" placeholder="${safeText(t('landingLinkHint'))}"></textarea></div></div><div class="row" style="margin-top:17px"><button class="btn primary" id="landingCreate">${safeText(t('landingCreate'))}</button></div>`);
+}
+function downloadLandingPage(){
+ try{const name=need($('landingName').value),desc=$('landingDescription').value,links=parseLandingLinks($('landingLinks').value);
+  const html=createLandingHtml(name,desc,links);
+  downloadBlob(new Blob([html],{type:'text/html;charset=utf-8'}),safeFilename(name)+'.html');
+  showToast(t('landingDownloaded'));
+ }catch(e){showToast(e.message===t('badInput')?t('landingInvalid'):e.message||t('landingInvalid'));}
+}
+
 /* ======================================================================
    08. INTERFAZ Y EVENTOS
    Los formularios se enlazan aquí; la lógica de negocio nunca depende de
@@ -2171,12 +2367,18 @@ function init(){
  $('scanButton').addEventListener('click',()=>$('scanInput').click());
  $('scanInput').addEventListener('change',async e=>{await readQrFile(e.target.files[0]);e.target.value='';});
  $('historyButton').addEventListener('click',showHistory);
+ $('saveLibrary').addEventListener('click',saveCurrentToLibrary);
+ $('openLibrary').addEventListener('click',openLibrary);
+ $('landingBuilder').addEventListener('click',openLandingBuilder);
  $('resetButton').addEventListener('click',()=>{if(!confirm(t('resetAsk')))return;state.type='url';state.fields={url:{url:'https://example.com'}};state.logoData='';state.logoFilename='';$('logoFileLabel').textContent=t('chooseLogo');$('contentType').value='url';renderFields();applyPreset('soft');showToast(t('resetDone'));});
  $('aboutButton').addEventListener('click',openAbout);$('modalClose').addEventListener('click',closeModal);$('modalBackdrop').addEventListener('click',e=>{if(e.target===$('modalBackdrop'))closeModal();});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('modalBackdrop').classList.contains('open'))closeModal();});
  $('modalContent').addEventListener('click',async e=>{
   const button=e.target.closest('button');if(!button)return;
   if(button.dataset.close){closeModal();return;}
+  if(button.id==='landingCreate'){downloadLandingPage();return;}
+  if(button.dataset.libraryOpen){const item=getLibrary().find(v=>v.id===button.dataset.libraryOpen);if(item){try{loadProject(item.project);closeModal();}catch{showToast(t('projectError'));}}return;}
+  if(button.dataset.libraryDelete){if(confirm(t('libraryDeleteAsk'))){const list=getLibrary().filter(v=>v.id!==button.dataset.libraryDelete);if(setLibrary(list))renderLibrary();else showToast(t('librarySavedFail'));}return;}
   if(button.id==='copyDecoded'){await copyText($('decodedQr').value);return;}
   if(button.id==='useDecoded'){state.type='text';state.fields.text={text:$('decodedQr').value};$('contentType').value='text';renderFields();refreshQr();closeModal();return;}
   if(button.dataset.historyLoad!==undefined){const entry=getHistory()[Number(button.dataset.historyLoad)];if(entry&&CONTENT_SCHEMAS[entry.type]){state.type=entry.type;state.fields[entry.type]=entry.fields;$('contentType').value=entry.type;renderFields();refreshQr();closeModal();}return;}
